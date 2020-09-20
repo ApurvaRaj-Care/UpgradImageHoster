@@ -1,5 +1,6 @@
 package ImageHoster.repository;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import org.springframework.stereotype.Repository;
 
@@ -34,10 +35,22 @@ public class ImageRepository {
         }
         return newImage;
     }
+    
+    public Comment uploadComment(Comment comment) {
 
-    //The method creates an instance of EntityManager
-    //Executes JPQL query to fetch all the images from the database
-    //Returns the list of all the images fetched from the database
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+
+        try {
+            transaction.begin();
+            em.persist(comment);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+        }
+        return comment;
+    }
+    
     public List<Image> getAllImages() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Image> query = em.createQuery("SELECT i from Image i", Image.class);
@@ -45,6 +58,7 @@ public class ImageRepository {
 
         return resultList;
     }
+
 
     //The method creates an instance of EntityManager
     //Executes JPQL query to fetch the image from the database with corresponding title
@@ -84,6 +98,7 @@ public class ImageRepository {
             em.merge(updatedImage);
             transaction.commit();
         } catch (Exception e) {
+        	e.printStackTrace();
             transaction.rollback();
         }
     }
@@ -109,5 +124,12 @@ public class ImageRepository {
             transaction.rollback();
         }
     }
+
+	public List<Comment> getCommentByImageId(Integer id) {
+		 EntityManager em = emf.createEntityManager();
+	        TypedQuery<Comment> query = em.createQuery("SELECT i from Comment i where i.image.id =:id", Comment.class).setParameter("id", id);;
+	        List<Comment> resultList = query.getResultList();
+	        return resultList;
+	}
 
 }

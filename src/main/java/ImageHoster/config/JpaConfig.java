@@ -22,10 +22,15 @@ public class JpaConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setDriverClassName("org.postgresql.Driver");
-        ds.setUrl("jdbc:postgresql://localhost:5432/imageHoster");
-        ds.setUsername("postgres");
-        ds.setPassword("password");
+        //ds.setDriverClassName("org.postgresql.Driver");
+        //ds.setUrl("jdbc:postgresql://localhost:5432/imageHoster");
+        //ds.setUsername("postgres");
+        //ds.setPassword("password"); 
+        
+        ds.setDriverClassName("com.mysql.jdbc.Driver");
+        ds.setUrl("jdbc:mysql://localhost:3306/imageHoster");
+        ds.setUsername("root");
+        ds.setPassword("careApurva12*");
         return ds;
     }
 }

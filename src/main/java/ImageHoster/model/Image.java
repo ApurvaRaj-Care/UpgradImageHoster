@@ -27,7 +27,7 @@ public class Image {
     // Text is a Postgres specific column type that allows you to save
     // text based data that will be longer than 256 characters
     // this is a base64 encoded version of the image
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "file",columnDefinition = "BLOB")
     private String imageFile;
 
 
