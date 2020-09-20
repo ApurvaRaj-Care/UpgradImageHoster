@@ -11,125 +11,143 @@ import java.util.List;
 @Repository
 public class ImageRepository {
 
-    //Get an instance of EntityManagerFactory from persistence unit with name as 'imageHoster'
-    @PersistenceUnit(unitName = "imageHoster")
-    private EntityManagerFactory emf;
+	// Get an instance of EntityManagerFactory from persistence unit with name as
+	// 'imageHoster'
+	@PersistenceUnit(unitName = "imageHoster")
+	private EntityManagerFactory emf;
 
+	// The method receives the Image object to be persisted in the database
+	// Creates an instance of EntityManager
+	// Starts a transaction
+	// The transaction is committed if it is successful
+	// The transaction is rolled back in case of unsuccessful transaction
+	public Image uploadImage(Image newImage) {
 
-    //The method receives the Image object to be persisted in the database
-    //Creates an instance of EntityManager
-    //Starts a transaction
-    //The transaction is committed if it is successful
-    //The transaction is rolled back in case of unsuccessful transaction
-    public Image uploadImage(Image newImage) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction transaction = em.getTransaction();
 
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-
-        try {
-            transaction.begin();
-            em.persist(newImage);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-        }
-        return newImage;
-    }
-    
-    public Comment uploadComment(Comment comment) {
-
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-
-        try {
-            transaction.begin();
-            em.persist(comment);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-        }
-        return comment;
-    }
-    
-    public List<Image> getAllImages() {
-        EntityManager em = emf.createEntityManager();
-        TypedQuery<Image> query = em.createQuery("SELECT i from Image i", Image.class);
-        List<Image> resultList = query.getResultList();
-
-        return resultList;
-    }
-
-
-    //The method creates an instance of EntityManager
-    //Executes JPQL query to fetch the image from the database with corresponding title
-    //Returns the image in case the image is found in the database
-    //Returns null if no image is found in the database
-    public Image getImageByTitle(String title) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Image> typedQuery = em.createQuery("SELECT i from Image i where i.title =:title", Image.class).setParameter("title", title);
-            return typedQuery.getSingleResult();
-        } catch (NoResultException nre) {
-            return null;
-        }
-    }
-
-    //The method creates an instance of EntityManager
-    //Executes JPQL query to fetch the image from the database with corresponding id
-    //Returns the image fetched from the database
-    public Image getImage(Integer imageId) {
-        EntityManager em = emf.createEntityManager();
-        TypedQuery<Image> typedQuery = em.createQuery("SELECT i from Image i where i.id =:imageId", Image.class).setParameter("imageId", imageId);
-        Image image = typedQuery.getSingleResult();
-        return image;
-    }
-
-    //The method receives the Image object to be updated in the database
-    //Creates an instance of EntityManager
-    //Starts a transaction
-    //The transaction is committed if it is successful
-    //The transaction is rolled back in case of unsuccessful transaction
-    public void updateImage(Image updatedImage) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-
-        try {
-            transaction.begin();
-            em.merge(updatedImage);
-            transaction.commit();
-        } catch (Exception e) {
-        	e.printStackTrace();
-            transaction.rollback();
-        }
-    }
-
-    //The method receives the Image id of the image to be deleted in the database
-    //Creates an instance of EntityManager
-    //Starts a transaction
-    //Get the image with corresponding image id from the database
-    //This changes the state of the image model from detached state to persistent state, which is very essential to use the remove() method
-    //If you use remove() method on the object which is not in persistent state, an exception is thrown
-    //The transaction is committed if it is successful
-    //The transaction is rolled back in case of unsuccessful transaction
-    public void deleteImage(Integer imageId) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-
-        try {
-            transaction.begin();
-            Image image = em.find(Image.class, imageId);
-            em.remove(image);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-        }
-    }
-
-	public List<Comment> getCommentByImageId(Integer id) {
-		 EntityManager em = emf.createEntityManager();
-	        TypedQuery<Comment> query = em.createQuery("SELECT i from Comment i where i.image.id =:id", Comment.class).setParameter("id", id);;
-	        List<Comment> resultList = query.getResultList();
-	        return resultList;
+		try {
+			transaction.begin();
+			em.persist(newImage);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
+		return newImage;
 	}
 
+	/**
+	 * uploadComment : to upload comment against any image
+	 * 
+	 * @param comment : Comment
+	 * @return Comment Object
+	 */
+
+	public Comment uploadComment(Comment comment) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction transaction = em.getTransaction();
+
+		try {
+			transaction.begin();
+			em.persist(comment);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
+		return comment;
+	}
+
+	public List<Image> getAllImages() {
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<Image> query = em.createQuery("SELECT i from Image i", Image.class);
+		List<Image> resultList = query.getResultList();
+
+		return resultList;
+	}
+
+	// The method creates an instance of EntityManager
+	// Executes JPQL query to fetch the image from the database with corresponding
+	// title
+	// Returns the image in case the image is found in the database
+	// Returns null if no image is found in the database
+	public Image getImageByTitle(String title) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			TypedQuery<Image> typedQuery = em.createQuery("SELECT i from Image i where i.title =:title", Image.class)
+					.setParameter("title", title);
+			return typedQuery.getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
+	}
+
+	// The method creates an instance of EntityManager
+	// Executes JPQL query to fetch the image from the database with corresponding
+	// id
+	// Returns the image fetched from the database
+	public Image getImage(Integer imageId) {
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<Image> typedQuery = em.createQuery("SELECT i from Image i where i.id =:imageId", Image.class)
+				.setParameter("imageId", imageId);
+		Image image = typedQuery.getSingleResult();
+		return image;
+	}
+
+	// The method receives the Image object to be updated in the database
+	// Creates an instance of EntityManager
+	// Starts a transaction
+	// The transaction is committed if it is successful
+	// The transaction is rolled back in case of unsuccessful transaction
+	public void updateImage(Image updatedImage) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction transaction = em.getTransaction();
+
+		try {
+			transaction.begin();
+			em.merge(updatedImage);
+			transaction.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			transaction.rollback();
+		}
+	}
+
+	// The method receives the Image id of the image to be deleted in the database
+	// Creates an instance of EntityManager
+	// Starts a transaction
+	// Get the image with corresponding image id from the database
+	// This changes the state of the image model from detached state to persistent
+	// state, which is very essential to use the remove() method
+	// If you use remove() method on the object which is not in persistent state, an
+	// exception is thrown
+	// The transaction is committed if it is successful
+	// The transaction is rolled back in case of unsuccessful transaction
+	public void deleteImage(Integer imageId) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction transaction = em.getTransaction();
+
+		try {
+			transaction.begin();
+			Image image = em.find(Image.class, imageId);
+			em.remove(image);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		}
+	}
+
+	/**
+	 * getCommentByImageId : Fetch comments by image ID
+	 * 
+	 * @param id
+	 * @return List<Comment> List of comments
+	 */
+	public List<Comment> getCommentByImageId(Integer id) {
+		EntityManager em = emf.createEntityManager();
+		TypedQuery<Comment> query = em.createQuery("SELECT i from Comment i where i.image.id =:id", Comment.class)
+				.setParameter("id", id);
+		;
+		List<Comment> resultList = query.getResultList();
+		return resultList;
+	}
 }
